@@ -1,15 +1,17 @@
 package com.suke.czx.modules.sys.service.impl;
 
-import com.suke.czx.modules.sys.dao.SysRoleMenuDao;
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.suke.czx.modules.sys.entity.SysRoleMenu;
+import com.suke.czx.modules.sys.mapper.SysRoleMenuMapper;
 import com.suke.czx.modules.sys.service.SysRoleMenuService;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 
@@ -20,31 +22,33 @@ import org.springframework.transaction.annotation.Transactional;
  * @email object_czx@163.com
  * @date 2016年9月18日 上午9:44:35
  */
-@Service("sysRoleMenuService")
-public class SysRoleMenuServiceImpl implements SysRoleMenuService {
-	@Autowired
-	private SysRoleMenuDao sysRoleMenuDao;
+@Service
+@AllArgsConstructor
+public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper,SysRoleMenu> implements SysRoleMenuService {
+
+	private final SysRoleMenuMapper sysRoleMenuMapper;
 
 	@Override
 	@Transactional
 	public void saveOrUpdate(Long roleId, List<Long> menuIdList) {
-		//先删除角色与菜单关系
-		sysRoleMenuDao.delete(roleId);
-
-		if(menuIdList.size() == 0){
-			return ;
+		sysRoleMenuMapper.delete(Wrappers.<SysRoleMenu>query().lambda().eq(SysRoleMenu::getRoleId,roleId));
+		if(CollUtil.isNotEmpty(menuIdList)){
+			menuIdList.forEach(id->{
+				SysRoleMenu menu = new SysRoleMenu();
+				menu.setRoleId(roleId);
+				menu.setMenuId(id);
+				sysRoleMenuMapper.insert(menu);
+			});
 		}
-
-		//保存角色与菜单关系
-		Map<String, Object> map = new HashMap<>();
-		map.put("roleId", roleId);
-		map.put("menuIdList", menuIdList);
-		sysRoleMenuDao.save(map);
 	}
 
 	@Override
 	public List<Long> queryMenuIdList(Long roleId) {
-		return sysRoleMenuDao.queryMenuIdList(roleId);
+		return sysRoleMenuMapper
+				.selectList(Wrappers.<SysRoleMenu>query().lambda().eq(SysRoleMenu::getRoleId,roleId))
+				.stream()
+				.map(SysRoleMenu::getMenuId)
+				.collect(Collectors.toList());
 	}
 
 }

@@ -8,8 +8,20 @@ package com.suke.czx.common.utils;
  * @date 2016年11月15日 下午1:23:52
  */
 public class Constant {
+
+    public static final String NUMBER_CODE_KEY = "x-springboot:number:code:";
+    public static final String MOBILE_CODE_KEY = "x-springboot:mobile:code:";
+    public static final String AUTHENTICATION_TOKEN = "x-springboot:token:";
+
+    public static final String TOKEN = "token";
+    public static final String TOKEN_ENTRY_POINT_URL = "/token/login";
+    public static final String TOKEN_LOGOUT_URL = "/token/logout";
+    public static final int TOKEN_EXPIRE = 60 * 60 * 24 * 7;
+
 	/** 超级管理员ID */
 	public static final int SUPER_ADMIN = 1;
+
+	public static final int CODE_SIZE = 4;
 
 	/**
 	 * 菜单类型
@@ -42,34 +54,6 @@ public class Constant {
             return value;
         }
     }
-    
-    /**
-     * 定时任务状态
-     * 
-     * @author czx
-     * @email object_czx@163.com
-     * @date 2016年12月3日 上午12:07:22
-     */
-    public enum ScheduleStatus {
-        /**
-         * 正常
-         */
-    	NORMAL(0),
-        /**
-         * 暂停
-         */
-    	PAUSE(1);
-
-        private int value;
-
-        ScheduleStatus(int value) {
-            this.value = value;
-        }
-        
-        public int getValue() {
-            return value;
-        }
-    }
 
     /**
      * 云服务商
@@ -86,7 +70,11 @@ public class Constant {
         /**
          * 腾讯云
          */
-        QCLOUD(3);
+        QCLOUD(3),
+        /**
+         * minio
+         */
+        MINIO(4);
 
         private int value;
 
